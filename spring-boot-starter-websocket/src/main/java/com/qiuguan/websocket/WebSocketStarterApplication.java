@@ -8,9 +8,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * @date 2023-07-24 17:28:06 Monday
  */
 @SpringBootApplication
-public class WebSocketApplication {
+public class WebSocketStarterApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(WebSocketApplication.class, args);
+        SpringApplication.run(WebSocketStarterApplication.class, args);
     }
 }

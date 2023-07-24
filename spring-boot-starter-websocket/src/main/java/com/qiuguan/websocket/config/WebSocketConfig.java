@@ -21,6 +21,7 @@ import java.util.Map;
 @EnableWebSocket
 @Configuration
 public class WebSocketConfig implements WebSocketConfigurer {
+
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
         registry.addHandler(myWebSocketHandler(), "/websocket/pdf")

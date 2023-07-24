@@ -32,9 +32,11 @@
         $(function () {
             var target = $("#target");
             if (window.location.protocol === 'http:') {
-                target.val('ws://' + window.location.host + target.val());
+                // target.val('ws://' + window.location.host + target.val());
+                target.val('ws://localhost:8080' + target.val());
             } else {
-                target.val('wss://' + window.location.host + target.val());
+                //target.val('wss://' + window.location.host + target.val());
+                target.val('ws://localhost:8080' + target.val());
             }
         });
 
@@ -121,7 +123,7 @@
     <div id="connect-container" class="layui-elem-field">
         <legend>Echo</legend>
         <div>
-            <input id="target" type="text" class="layui-input" size="40" style="width: 350px" value="/echoMessage"/>
+            <input id="target" type="text" class="layui-input" size="40" style="width: 350px" value="/websocket/pdf"/>
         </div>
         <div>
             <button id="connect" class="layui-btn layui-btn-normal" onclick="connect();">Connect</button>
