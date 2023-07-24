@@ -1,5 +1,7 @@
 package com.qiuguan.websocket.handler;
 
+import com.qiuguan.websocket.manager.WebSocketSessionManager;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
@@ -10,6 +12,7 @@ import org.springframework.web.socket.handler.AbstractWebSocketHandler;
  * @author fu yuan hui
  * @date 2023-07-24 16:31:19 Monday
  */
+@AllArgsConstructor
 @Slf4j
 public class MyWebSocketHandler extends AbstractWebSocketHandler {
 
@@ -21,7 +24,6 @@ public class MyWebSocketHandler extends AbstractWebSocketHandler {
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         log.info("websocket 与客户端建立连接, sessionId: {}", session.getId());
-        super.afterConnectionEstablished(session);
     }
 
 

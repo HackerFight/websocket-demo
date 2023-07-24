@@ -34,9 +34,11 @@
         $(function () {
             var target = $("#target");
             if (window.location.protocol === 'http:') {
-                target.val('http://' + window.location.host + target.val());
+                target.val('http://localhost:8080' + target.val());
+                //target.val('http://' + window.location.host + target.val());
             } else {
-                target.val('https://' + window.location.host + target.val());
+                //target.val('https://' + window.location.host + target.val());
+                target.val('http://localhost:8080' + target.val());
             }
         });
 
@@ -117,7 +119,7 @@
     <div id="connect-container" class="layui-elem-field">
         <legend>Echo With SockJS</legend>
         <div>
-            <input id="target" type="text" class="layui-input" size="40" style="width: 350px" value="/echoMessage_SockJS"/>
+            <input id="target" type="text" class="layui-input" size="40" style="width: 350px" value="/websocket/pdf"/>
         </div>
         <div>
             <button id="connect" class="layui-btn layui-btn-normal" onclick="connect();">Connect</button>
