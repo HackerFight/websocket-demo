@@ -13,18 +13,18 @@ public interface WebSocketSessionManager {
      * @param id
      * @param session
      */
-    void put(String id, WebSocketSession session);
+    void put(Object id, WebSocketSession session);
 
     /**
      * remove
      * @param id
      */
-    void remove(String id);
+    void remove(Object id);
 
     /**
      * get
      * @param id
      * @return
      */
-    WebSocketSession get(String id);
+    WebSocketSession get(Object id);
 }

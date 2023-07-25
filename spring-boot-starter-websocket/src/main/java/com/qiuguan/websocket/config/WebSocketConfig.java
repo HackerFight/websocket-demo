@@ -1,5 +1,6 @@
 package com.qiuguan.websocket.config;
 
+import com.qiuguan.websocket.constants.WebSocketConstants;
 import com.qiuguan.websocket.handler.MyWebSocketHandler;
 import com.qiuguan.websocket.manager.DefaultWebSocketSessionManager;
 import com.qiuguan.websocket.manager.WebSocketSessionManager;
@@ -45,7 +46,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
     @Bean
     public WebSocketHandler myWebSocketHandler(){
-        return new MyWebSocketHandler();
+        return new MyWebSocketHandler(defaultWebSocketSessionManager());
     }
 
 
@@ -65,11 +66,13 @@ public class WebSocketConfig implements WebSocketConfigurer {
         @Override
         public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
             log.info("连接动作建立握手之前， args: {}", attributes);
-            ServletServerHttpRequest req = (ServletServerHttpRequest) request;
-            HttpSession session = req.getServletRequest().getSession();
-            String id = session.getId();
-            log.info("sessionId: {}", id);
-            attributes.put("sessionId", id);
+            if(request instanceof ServletServerHttpRequest) {
+                ServletServerHttpRequest serverHttpRequest = (ServletServerHttpRequest) request;
+                HttpSession session = serverHttpRequest.getServletRequest().getSession();
+                String id = session.getId();
+                log.info("客户端与服务端握手连接，保存客户端的 【sessionId: {}】用于识别客户端定向发送消息", id);
+                attributes.put(WebSocketConstants.CLIENT_ID, id);
+            }
             return super.beforeHandshake(request, response, wsHandler, attributes);
         }
 
