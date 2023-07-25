@@ -30,7 +30,7 @@ public class MyWebSocketHandler extends AbstractWebSocketHandler {
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         Map<String, Object> attributes = session.getAttributes();
-        log.info("客户端与服务端建立连接成功，sessionId: {}, attributes: {}", session.getId(), attributes);
+        log.info("客户端与服务端建立连接成功，socketId: {}, attributes: {}", session.getId(), attributes);
         this.webSocketSessionManager.put(attributes.get(WebSocketConstants.CLIENT_ID), session);
     }
 
@@ -46,7 +46,7 @@ public class MyWebSocketHandler extends AbstractWebSocketHandler {
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
         String payload = message.getPayload();
         log.info("接收到客户端 【{}】的消息， 消息内容是：{}, socketId: {}", session.getAttributes().get(WebSocketConstants.CLIENT_ID), payload, session.getId());
-        session.sendMessage(new TextMessage(payload + "1111"));
+        session.sendMessage(new TextMessage("服务端已收到客户端的消息【" + payload + "】，原路返回"));
     }
 
     @Override
