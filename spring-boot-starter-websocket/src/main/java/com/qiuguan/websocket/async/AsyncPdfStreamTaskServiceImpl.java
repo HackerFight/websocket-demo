@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import java.io.OutputStream;
 import java.util.Collection;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 
@@ -39,8 +40,15 @@ public class AsyncPdfStreamTaskServiceImpl implements AsyncTaskService {
     @Override
     public void submit(Callable<OutputStream> callable) {
         FutureTask<OutputStream> futureTask = new FutureTask<>(callable);
+        CompletableFuture<OutputStream> cf = new CompletableFuture<>();
+
         try {
             this.asyncTaskExecutor.submit(futureTask);
+            try {
+                Thread.sleep(3000L);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             OutputStream pdfStream = futureTask.get(3, TimeUnit.SECONDS);
             this.pdfStreamWebSocketHandler.handle(pdfStream);
         } catch (Throwable e) {
@@ -50,6 +58,6 @@ public class AsyncPdfStreamTaskServiceImpl implements AsyncTaskService {
 
     @Override
     public void submit(Collection<Callable<OutputStream>> tasks) {
-
+        tasks.forEach(this::submit);
     }
 }
