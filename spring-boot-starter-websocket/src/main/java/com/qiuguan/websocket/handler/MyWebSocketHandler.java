@@ -47,6 +47,9 @@ public class MyWebSocketHandler extends AbstractWebSocketHandler {
         String payload = message.getPayload();
         log.info("接收到客户端 【{}】的消息， 消息内容是：{}, socketId: {}", session.getAttributes().get(WebSocketConstants.CLIENT_ID), payload, session.getId());
         session.sendMessage(new TextMessage("服务端已收到客户端的消息【" + payload + "】，原路返回"));
+
+        //TODO:
+        //当前端拿到文件流后开始打印，打印成功后给我发送一个成功的消息，我根据这个消息去把文件上传到OSS， 以及更新数据库状态等操作。
     }
 
     @Override
