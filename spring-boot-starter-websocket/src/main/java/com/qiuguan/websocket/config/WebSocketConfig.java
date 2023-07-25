@@ -1,5 +1,7 @@
 package com.qiuguan.websocket.config;
 
+import com.qiuguan.websocket.biz.PdfStreamWebSocketHandler;
+import com.qiuguan.websocket.biz.WebSocketStreamHandler;
 import com.qiuguan.websocket.constants.WebSocketConstants;
 import com.qiuguan.websocket.handler.MyWebSocketHandler;
 import com.qiuguan.websocket.manager.DefaultWebSocketSessionManager;
@@ -58,6 +60,11 @@ public class WebSocketConfig implements WebSocketConfigurer {
     @Bean
     public WebSocketHandlerInterceptor webSocketHandlerInterceptor() {
         return new WebSocketHandlerInterceptor();
+    }
+
+    @Bean
+    public WebSocketStreamHandler pdfStreamWebSocketHandler(){
+        return new PdfStreamWebSocketHandler(defaultWebSocketSessionManager(), myWebSocketHandler());
     }
 
     @Slf4j

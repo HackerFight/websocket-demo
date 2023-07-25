@@ -21,7 +21,7 @@ public class AsyncConfig {
         executor.setMaxPoolSize(Runtime.getRuntime().availableProcessors() << 4);
         executor.setQueueCapacity(1024);
         executor.setKeepAliveSeconds(30);
-        executor.setThreadNamePrefix("Async-Message-Consume-");
+        executor.setThreadNamePrefix("async-task-thread-");
         executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
         executor.setWaitForTasksToCompleteOnShutdown(true);
         return executor;

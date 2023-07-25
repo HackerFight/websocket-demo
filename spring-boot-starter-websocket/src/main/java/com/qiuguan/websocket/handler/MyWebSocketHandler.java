@@ -4,7 +4,7 @@ import com.qiuguan.websocket.constants.WebSocketConstants;
 import com.qiuguan.websocket.manager.WebSocketSessionManager;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
+import org.springframework.web.socket.BinaryMessage;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -16,12 +16,11 @@ import java.util.Map;
  * @author fu yuan hui
  * @date 2023-07-24 16:31:19 Monday
  */
-@Component
 @AllArgsConstructor
 @Slf4j
 public class MyWebSocketHandler extends AbstractWebSocketHandler {
 
-    private final WebSocketSessionManager webSocketSessionManager;
+    protected final WebSocketSessionManager webSocketSessionManager;
 
     /**
      * 建立连接之后
@@ -48,6 +47,14 @@ public class MyWebSocketHandler extends AbstractWebSocketHandler {
         String payload = message.getPayload();
         log.info("接收到客户端 【{}】的消息， 消息内容是：{}, socketId: {}", session.getAttributes().get(WebSocketConstants.CLIENT_ID), payload, session.getId());
         session.sendMessage(new TextMessage(payload + "1111"));
+    }
+
+    @Override
+    protected void handleBinaryMessage(WebSocketSession session, BinaryMessage message) throws Exception {
+        if(session.isOpen()) {
+            session.sendMessage(message);
+            log.info("服务端向客户端发送消息成功，sessionId: {}", session.getAttributes().get(WebSocketConstants.CLIENT_ID));
+        }
     }
 
     @Override

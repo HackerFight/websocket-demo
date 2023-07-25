@@ -67,11 +67,10 @@
             ws.onopen = function () {
                 setConnected(true);
                 log('Info: WebSocket connection opened.');
-
             };
 
             ws.onmessage = function (event) {
-                log('Received: ' + event.data);
+                log('websocket client Received Msg: ' + event.data);
             };
 
             ws.onclose = function () {
@@ -107,7 +106,7 @@
 
         //日志输出
         function log(message) {
-            console.debug(message);
+            console.log(message);
         }
     </script>
 
