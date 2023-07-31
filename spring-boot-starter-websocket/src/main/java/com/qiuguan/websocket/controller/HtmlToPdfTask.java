@@ -18,6 +18,7 @@ public class HtmlToPdfTask implements Callable<OutputStream> {
 
     @Override
     public OutputStream call() throws Exception {
+        System.out.println("TASK: " + Thread.currentThread().getName() + " BEGIN...");
         return HtmlToPdfStreamUtils.generatePdfStream(html);
     }
 }

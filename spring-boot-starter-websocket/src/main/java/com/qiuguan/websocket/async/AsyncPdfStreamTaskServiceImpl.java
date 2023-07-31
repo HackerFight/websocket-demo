@@ -2,6 +2,7 @@ package com.qiuguan.websocket.async;
 
 import com.qiuguan.async.service.AsyncPdfTaskService;
 import com.qiuguan.websocket.biz.WebSocketStreamHandler;
+import com.qiuguan.websocket.controller.HtmlToPdfTask;
 import com.qiuguan.websocket.utils.HtmlToPdfStreamUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Primary;
@@ -14,6 +15,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import javax.servlet.http.HttpServletRequest;
 import java.io.OutputStream;
 import java.util.Objects;
+import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -46,5 +48,23 @@ public class AsyncPdfStreamTaskServiceImpl implements AsyncPdfTaskService {
             HttpServletRequest request = ((ServletRequestAttributes) (Objects.requireNonNull(RequestContextHolder.getRequestAttributes()))).getRequest();
             System.out.println("子线程 " + Thread.currentThread().getName() + " 能否获取到header参数值：" + request.getHeader("client_id"));
         }).start();
+
+
+        this.pipelineWithHeader(new HtmlToPdfTask(html));
+    }
+
+    @Override
+    public void pipelineWithHeader(Callable<OutputStream> task) {
+        CompletableFuture.runAsync(() -> {
+            System.out.println("CompletableFuture.runAsync: " + Thread.currentThread().getName());
+            OutputStream outputStream = null;
+            try {
+                outputStream = task.call();
+                System.out.println("outputStream = " + outputStream);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+            pdfStreamWebSocketHandler.handle(outputStream);
+        }, asyncTaskExecutor);
     }
 }
