@@ -11,4 +11,6 @@ public interface WebSocketStreamHandler {
     void handle(OutputStream byteArrayOutputStream);
 
     void handle(byte[] bytes);
+
+    void handle(String content);
 }

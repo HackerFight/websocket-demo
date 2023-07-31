@@ -4,12 +4,14 @@ import com.qiuguan.websocket.ex.PdfStreamHandleException;
 import com.qiuguan.websocket.manager.WebSocketSessionManager;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.socket.BinaryMessage;
+import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.WebSocketSession;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -54,11 +56,28 @@ public class PdfStreamWebSocketHandler implements WebSocketStreamHandler {
         }
     }
 
+    @Override
+    public void handle(String content) {
+        WebSocketSession session = webSocketSessionManager.get(getClientId());
+        try {
+            if (session != null && session.isOpen()) {
+                this.webSocketHandler.handleMessage(session, new TextMessage(content));
+            }
+
+        } catch (Exception e) {
+            throw new PdfStreamHandleException("向客户端发消息失败", e);
+        }
+    }
+
     private String getClientId() {
-        RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
-        String clientId = Objects.isNull(requestAttributes) ? "ALL" : requestAttributes.getSessionId();
-        log.info("websocket 客户端id: {}", clientId);
-        return clientId;
+//        RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
+//        String clientId = Objects.isNull(requestAttributes) ? "ALL" : requestAttributes.getSessionId();
+//        log.info("websocket 客户端id: {}", clientId);
+//        return clientId;
+
+
+        HttpServletRequest request = ((ServletRequestAttributes) (Objects.requireNonNull(RequestContextHolder.getRequestAttributes()))).getRequest();
+        return request.getHeader("client_id");
     }
 
     private byte[] convert(OutputStream outputStream) {

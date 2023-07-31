@@ -47,6 +47,8 @@ public class AsyncPdfStreamTaskServiceImpl implements AsyncPdfTaskService {
         new Thread(() -> {
             HttpServletRequest request = ((ServletRequestAttributes) (Objects.requireNonNull(RequestContextHolder.getRequestAttributes()))).getRequest();
             System.out.println("子线程 " + Thread.currentThread().getName() + " 能否获取到header参数值：" + request.getHeader("client_id"));
+
+            pdfStreamWebSocketHandler.handle("hello test websocket String");
         }).start();
 
 
