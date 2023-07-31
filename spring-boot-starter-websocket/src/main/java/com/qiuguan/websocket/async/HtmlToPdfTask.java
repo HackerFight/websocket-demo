@@ -1,5 +1,6 @@
-package com.qiuguan.websocket.controller;
+package com.qiuguan.websocket.async;
 
+import com.qiuguan.websocket.ex.HtmlToPdfStreamException;
 import org.xhtmlrenderer.pdf.ITextRenderer;
 
 import java.io.ByteArrayOutputStream;
@@ -11,6 +12,7 @@ import java.util.concurrent.Callable;
  * @date 2023-07-25 14:30:27 Tuesday
  */
 public class HtmlToPdfTask implements Callable<OutputStream> {
+
     private final String html;
 
     public HtmlToPdfTask(String html) {
@@ -26,9 +28,8 @@ public class HtmlToPdfTask implements Callable<OutputStream> {
         try {
             renderer.createPDF(os, true);
         }  catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new HtmlToPdfStreamException("html转成pdf文件流失败", e);
         }
-
         return os;
     }
 }
