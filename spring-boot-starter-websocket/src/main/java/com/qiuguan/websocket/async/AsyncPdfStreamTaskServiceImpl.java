@@ -1,17 +1,20 @@
 package com.qiuguan.websocket.async;
 
-import com.qiuguan.async.service.AsyncTaskService;
+import com.qiuguan.async.service.AsyncPdfTaskService;
 import com.qiuguan.websocket.biz.WebSocketStreamHandler;
+import com.qiuguan.websocket.utils.HtmlToPdfStreamUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Primary;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.OutputStream;
-import java.util.Collection;
-import java.util.concurrent.Callable;
-import java.util.concurrent.FutureTask;
-import java.util.concurrent.TimeUnit;
+import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * @author fu yuan hui
@@ -20,36 +23,28 @@ import java.util.concurrent.TimeUnit;
 @AllArgsConstructor
 @Primary
 @Service
-public class AsyncPdfStreamTaskServiceImpl implements AsyncTaskService {
+public class AsyncPdfStreamTaskServiceImpl implements AsyncPdfTaskService {
 
     private final ThreadPoolTaskExecutor asyncTaskExecutor;
 
     private final WebSocketStreamHandler pdfStreamWebSocketHandler;
 
     @Override
-    public void execute(Runnable runnable) {
-        asyncTaskExecutor.execute(runnable);
+    public void pipeline(String html) {
+        CompletableFuture.runAsync(() -> {
+            OutputStream outputStream = HtmlToPdfStreamUtils.generatePdfStream(html);
+            pdfStreamWebSocketHandler.handle(outputStream);
+        }, asyncTaskExecutor);
     }
 
     @Override
-    public void execute(Collection<Runnable> tasks) {
-        tasks.forEach(asyncTaskExecutor::execute);
-    }
+    public void pipelineWithHeader(String html) {
+        RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
+        RequestContextHolder.setRequestAttributes(requestAttributes, true);
 
-    @Override
-    public void submit(Callable<OutputStream> callable) {
-        FutureTask<OutputStream> futureTask = new FutureTask<>(callable);
-        try {
-            this.asyncTaskExecutor.submit(futureTask);
-            OutputStream pdfStream = futureTask.get(3, TimeUnit.SECONDS);
-            this.pdfStreamWebSocketHandler.handle(pdfStream);
-        } catch (Throwable e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public void submit(Collection<Callable<OutputStream>> tasks) {
-
+        new Thread(() -> {
+            HttpServletRequest request = ((ServletRequestAttributes) (Objects.requireNonNull(RequestContextHolder.getRequestAttributes()))).getRequest();
+            System.out.println("子线程 " + Thread.currentThread().getName() + " 能否获取到header参数值：" + request.getHeader("client_id"));
+        }).start();
     }
 }

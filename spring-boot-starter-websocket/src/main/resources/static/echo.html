@@ -33,10 +33,10 @@
             var target = $("#target");
             if (window.location.protocol === 'http:') {
                 // target.val('ws://' + window.location.host + target.val());
-                target.val('ws://localhost:8080' + target.val());
+                target.val('ws://localhost:8080' + target.val() + "/10001");
             } else {
                 //target.val('wss://' + window.location.host + target.val());
-                target.val('ws://localhost:8080' + target.val());
+                target.val('ws://localhost:8080' + target.val() + "/10001");
             }
         });
 

@@ -11,14 +11,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
-import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 import org.springframework.web.socket.server.support.HttpSessionHandshakeInterceptor;
 
-import javax.servlet.http.HttpSession;
 import java.util.Map;
 
 /**
@@ -29,17 +27,19 @@ import java.util.Map;
 @Configuration
 public class WebSocketConfig implements WebSocketConfigurer {
 
-    private static final String WS_PDF_PONG = "/websocket/pdf";
+    private static final String WS_PDF_PONG_URL = "/websocket/pdf/";
+    private static final String WS_CONNECTION = WS_PDF_PONG_URL + "{clientId}";
+
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(myWebSocketHandler(), WS_PDF_PONG)
+        registry.addHandler(myWebSocketHandler(), WS_CONNECTION)
                 .setAllowedOriginPatterns("*")
                 .addInterceptors(webSocketHandlerInterceptor())
                 ;
 
         //降级处理
-        registry.addHandler(myWebSocketHandler(), WS_PDF_PONG)
+        registry.addHandler(myWebSocketHandler(), WS_CONNECTION)
                 .setAllowedOriginPatterns("*")
                 .addInterceptors(webSocketHandlerInterceptor())
                 .withSockJS()
@@ -72,14 +72,10 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
         @Override
         public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
-            log.info("连接动作建立握手之前， args: {}", attributes);
-            if(request instanceof ServletServerHttpRequest) {
-                ServletServerHttpRequest serverHttpRequest = (ServletServerHttpRequest) request;
-                HttpSession session = serverHttpRequest.getServletRequest().getSession();
-                String id = session.getId();
-                log.info("客户端与服务端握手连接，保存客户端的 【sessionId: {}】用于识别客户端定向发送消息", id);
-                attributes.put(WebSocketConstants.CLIENT_ID, id);
-            }
+            String path = request.getURI().toURL().getPath();
+            String clientId = path.substring(WS_PDF_PONG_URL.length());
+            log.info("客户端与服务端开始握手，clientId: {}", clientId);
+            attributes.put(WebSocketConstants.CLIENT_ID, clientId);
             return super.beforeHandshake(request, response, wsHandler, attributes);
         }
 

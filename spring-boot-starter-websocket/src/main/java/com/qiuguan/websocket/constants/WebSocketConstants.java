@@ -6,5 +6,5 @@ package com.qiuguan.websocket.constants;
  */
 public interface WebSocketConstants {
 
-    String CLIENT_ID = "client_session_id";
+    String CLIENT_ID = "ws_client_id";
 }
