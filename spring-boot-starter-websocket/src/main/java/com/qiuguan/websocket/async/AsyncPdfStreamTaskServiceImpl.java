@@ -41,6 +41,9 @@ public class AsyncPdfStreamTaskServiceImpl implements AsyncPdfTaskService {
 
     @Override
     public void pipelineWithHeader(String html) {
+        /**
+         * 如果不这样重新设置的话，子线程是无法获取请求体参数的
+         */
         RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
         RequestContextHolder.setRequestAttributes(requestAttributes, true);
 
